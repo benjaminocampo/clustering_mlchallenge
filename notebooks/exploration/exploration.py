@@ -1,5 +1,3 @@
-# %% [markdown]
-# ## Imports
 # %%
 import pandas as pd
 import seaborn as sns
@@ -48,17 +46,26 @@ sns.barplot(data=most_frequent_actions(
 plt.xticks(rotation=90)
 # %%
 plt.figure(figsize=(20,10))
-sns.barplot(data=most_frequent_actions(df_test, 25), x="action", y="count")
+sns.barplot(data=most_frequent_actions(
+    df.loc[df["type_of_instance"] == "testing", "relaxed_plan"], 25),
+            x="action",
+            y="count")
 plt.xticks(rotation=90)
 # %% [markdown]
 # ## Frequent objects
 # %%
 plt.figure(figsize=(20,10))
-sns.barplot(data=most_frequent_objects(df_train, 25), x="object", y="count")
+sns.barplot(data=most_frequent_objects(
+    df.loc[df["type_of_instance"] == "training", "relaxed_plan"], 25),
+            x="action",
+            y="count")
 plt.xticks(rotation=90)
 # %%
 plt.figure(figsize=(20,10))
-sns.barplot(data=most_frequent_objects(df_test, 25), x="object", y="count")
+sns.barplot(data=most_frequent_objects(
+    df.loc[df["type_of_instance"] == "testing", "relaxed_plan"], 25),
+            x="action",
+            y="count")
 plt.xticks(rotation=90)
 # %% [markdown]
 # ## Good actions that are contained in relaxed plans
@@ -71,7 +78,7 @@ plt.xticks(rotation=90)
         .join(df_train["relaxed_plan"].apply(lambda plan: len(plan)))
         .describe()
 )
-
+# %%
 (
     df_test[["good_operators", "relaxed_plan"]]
         .apply(lambda row: sum(action in row[0] for action in row[1]), axis=1)
@@ -80,5 +87,3 @@ plt.xticks(rotation=90)
         .join(df_test["relaxed_plan"].apply(lambda plan: len(plan)))
         .describe()
 )
-# %% [markdown]
-# ##
