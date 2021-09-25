@@ -9,3 +9,6 @@ dependencies:
   - scikit-learn
   - nltk
   - spacy
+  - pyarrow
+  - gensim
+  - adjusttext
