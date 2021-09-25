@@ -39,15 +39,13 @@ sns.countplot(data=df, x="plan_length", hue="type_of_instance")
 # ## Frequent actions
 # %%
 plt.figure(figsize=(20, 10))
-sns.barplot(data=most_frequent_actions(
-    df.loc[df["type_of_instance"] == "training", "relaxed_plan"], 25),
+sns.barplot(data=most_frequent_actions(df_train["relaxed_plan"], 25),
             x="action",
             y="count")
 plt.xticks(rotation=90)
 # %%
 plt.figure(figsize=(20,10))
-sns.barplot(data=most_frequent_actions(
-    df.loc[df["type_of_instance"] == "testing", "relaxed_plan"], 25),
+sns.barplot(data=most_frequent_actions(df_test["relaxed_plan"], 25),
             x="action",
             y="count")
 plt.xticks(rotation=90)
@@ -55,16 +53,14 @@ plt.xticks(rotation=90)
 # ## Frequent objects
 # %%
 plt.figure(figsize=(20,10))
-sns.barplot(data=most_frequent_objects(
-    df.loc[df["type_of_instance"] == "training", "relaxed_plan"], 25),
-            x="action",
+sns.barplot(data=most_frequent_objects(df_train["relaxed_plan"], 25),
+            x="object",
             y="count")
 plt.xticks(rotation=90)
 # %%
 plt.figure(figsize=(20,10))
-sns.barplot(data=most_frequent_objects(
-    df.loc[df["type_of_instance"] == "testing", "relaxed_plan"], 25),
-            x="action",
+sns.barplot(data=most_frequent_objects(df_test["relaxed_plan"], 25),
+            x="object",
             y="count")
 plt.xticks(rotation=90)
 # %% [markdown]
