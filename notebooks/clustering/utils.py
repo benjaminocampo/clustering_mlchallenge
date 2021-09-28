@@ -7,9 +7,52 @@ from collections import Counter
 from sklearn.manifold import TSNE
 
 
-def get_vocab(corpus):
+def get_vocab_by_exp(corpus):
     all_words = np.concatenate([tokenize_plan(plan) for plan in corpus])
-    return Counter(all_words).keys()
+    return np.array(list(Counter(all_words).keys()))
+
+def get_vocab_by_action(corpus):
+    all_words = np.concatenate(corpus)
+    return np.array(list(Counter(all_words).keys()))
+
+def get_action_vec(action, vector_dim, sch_enc, obj_enc):
+    vec = np.zeros(vector_dim)
+    schema, *instances = action.split()
+    vec[0] = sch_enc[schema]
+    for i, instance in zip(range(1, vector_dim - 1, 2), instances):
+        instance_number = int(re.search(r"\d+", instance)[0]) + 1
+        object = re.search(r"[A-Za-z]+", instance)[0]
+        vec[i] = obj_enc[object]
+        vec[i + 1] = instance_number
+    return vec
+
+def get_custom_model(vocab):
+    pass
+
+def get_coo_ocurrence_model(vocab):
+    pass
+
+def get_act_schs(corpus):
+    all_words = np.concatenate(
+        [tokenize_plan(plan, with_wrapping=False)
+        for plan in corpus])
+    act_schs = set()
+    for w in all_words:
+        match = re.search(r"[A-Za-z]+\d", w)
+        if match is None:
+            act_schs.add(w)
+    return list(act_schs)
+
+def get_objects(corpus):
+    all_words = np.concatenate(
+        [tokenize_plan(plan, with_wrapping=False)
+        for plan in corpus])
+    objects = set()
+    for w in all_words:
+        match = re.search(r"([A-Za-z]+)\d", w)
+        if match:
+            objects.add(match[1])
+    return list(objects)
 
 
 def get_embedding(vocab, model):
@@ -34,8 +77,11 @@ def get_embedding_2DTSNE(vocab, model):
 def get_object_types(vocab):
     nof_words = len(vocab)
     obj_types = np.zeros(nof_words)
-    obj_indices = {"Actions/Separators": 0}
+    obj_indices = {"actions": 0, "separators": 1}
     for i, word in enumerate(vocab):
+        match_sep = re.search(r"[\(\)]", word)
+        if match_sep:
+            obj_types[i] = 1
         match = re.search(r"([A-Za-z]+)\d", word)
         if match:
             if match[1] not in obj_indices:
@@ -44,12 +90,15 @@ def get_object_types(vocab):
     return obj_types, obj_indices
 
 
-def tokenize_plan(plan):
+def tokenize_plan(plan, with_wrapping=True):
     begin_token = "("
     end_token = ")"
     wrap = lambda action: begin_token + " " + action + " " + end_token
-    splited_actions = np.concatenate([wrap(action).split() for action in plan])
-    return splited_actions.tolist()
+    if with_wrapping:
+        tokenized_plans = [wrap(action).split() for action in plan]
+    else:
+        tokenized_plans = [action.split() for action in plan]
+    return np.concatenate(tokenized_plans).tolist()
 
 
 def plot_vocabulary_2DTSNE(X_TSNE,
